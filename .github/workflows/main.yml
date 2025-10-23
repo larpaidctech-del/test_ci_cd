@@ -204,5 +204,5 @@ jobs:
             docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
       
       # Step 4: Success notification
-      - name: ✅ Deployment complete.
+      - name: ✅ Deployment complete..
         run: echo "Application deployed successfully!"
