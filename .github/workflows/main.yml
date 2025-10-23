@@ -191,17 +191,17 @@ jobs:
       
       # Step 3: Deploy to server (ตัวอย่าง - ต้องปรับแต่งตามจริง)
       # หากใช้ SSH, ควรเพิ่ม SSH key ใน GitHub Secrets
-      # - name: 🚢 Deploy to server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: ${{ secrets.USERNAME }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       docker pull ${{ env.DOCKER_IMAGE }}:latest
-      #       docker stop express-app || true
-      #       docker rm express-app || true
-      #       docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
+      - name: 🚢 Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ env.DOCKER_IMAGE }}:latest
+            docker stop express-app || true
+            docker rm express-app || true
+            docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
       
       # Step 4: Success notification
       - name: ✅ Deployment complete
