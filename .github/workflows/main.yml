@@ -168,58 +168,60 @@ jobs:
         continue-on-error: true
 
   # Job 4: Deploy (Optional - ตัวอย่างการ deploy)
-  deploy:
-    name: Deploy to Production
-    # runs-on: ubuntu-latest
-    runs-on: self-hosted
-    needs: [build-docker, security-scan]
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-    environment:
-      name: production
-      url: http://your-app-url.com
+  # deploy:
+  #   name: Deploy to Production
+  #   runs-on: ubuntu-latest
+  #   needs: [build-docker, security-scan]
+  #   if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+  #   environment:
+  #     name: production
+  #     url: http://your-app-url.com
     
-    steps:
-      # Step 1: Checkout code
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     # Step 1: Checkout code
+  #     - name: 📥 Checkout code
+  #       uses: actions/checkout@v4
       
-      # Step 2: Deploy notification
-      - name: 🚀 Deploy notification
-        run: |
-          echo "Deploying application..."
-          echo "Image: ${{ env.DOCKER_IMAGE }}:latest"
-          echo "Environment: production"
+  #     # Step 2: Deploy notification
+  #     - name: 🚀 Deploy notification
+  #       run: |
+  #         echo "Deploying application..."
+  #         echo "Image: ${{ env.DOCKER_IMAGE }}:latest"
+  #         echo "Environment: production"
       
-      # Step 3: Deploy to server (ตัวอย่าง - ต้องปรับแต่งตามจริง)
-      # หากใช้ SSH, ควรเพิ่ม SSH key ใน GitHub Secrets
-      # #ssh -i ~/ssh_key.pem aidcitadmin@10.0.100.17
-      # - name: 🚢 Deploy to server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: ${{ secrets.USERNAME }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     port: 22
-      #     script: |
-      #       docker pull ${{ env.DOCKER_IMAGE }}:latest
-      #       docker stop express-app || true
-      #       docker rm express-app || true
-      #       docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
+  #     # Step 3: Deploy to server (ตัวอย่าง - ต้องปรับแต่งตามจริง)
+  #     # หากใช้ SSH, ควรเพิ่ม SSH key ใน GitHub Secrets
+  #     #ssh -i ~/ssh_key.pem aidcitadmin@10.0.100.17
+  #     - name: 🚢 Deploy to server
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.HOST }}
+  #         username: ${{ secrets.USERNAME }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         port: 22
+  #         script: |
+  #           docker pull ${{ env.DOCKER_IMAGE }}:latest
+  #           docker stop express-app || true
+  #           docker rm express-app || true
+  #           docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
 
-      - name: 🚢 Deploy to server
-        uses: appleboy/ssh-action@master
-        with:
-          host: 10.0.100.17
-          username: aidcitadmin
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            docker pull ${{ env.DOCKER_IMAGE }}:latest
-            docker stop express-app || true
-            docker rm express-app || true
-            docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
-          strict_host_key_checking: false
+  deploy:
+  runs-on: self-hosted
+  steps:
+    - name: 🚢 Deploy to server
+      uses: appleboy/ssh-action@master
+      with:
+        host: 10.0.100.17
+        username: aidcitadmin
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          docker pull ${{ env.DOCKER_IMAGE }}:latest
+          docker stop express-app || true
+          docker rm express-app || true
+          docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
+        strict_host_key_checking: false
       
       # Step 4: Success notification
-      - name: ✅ Deployment complete..
+      # - name: ✅ Deployment complete..
         run: echo "Application deployed successfully!"
