@@ -197,6 +197,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           script: |
             docker pull ${{ env.DOCKER_IMAGE }}:latest
             docker stop express-app || true
