@@ -170,7 +170,8 @@ jobs:
   # Job 4: Deploy (Optional - ตัวอย่างการ deploy)
   deploy:
     name: Deploy to Production
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [build-docker, security-scan]
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     environment:
@@ -191,11 +192,25 @@ jobs:
       
       # Step 3: Deploy to server (ตัวอย่าง - ต้องปรับแต่งตามจริง)
       # หากใช้ SSH, ควรเพิ่ม SSH key ใน GitHub Secrets
+      # #ssh -i ~/ssh_key.pem aidcitadmin@10.0.100.17
+      # - name: 🚢 Deploy to server
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.HOST }}
+      #     username: ${{ secrets.USERNAME }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: 22
+      #     script: |
+      #       docker pull ${{ env.DOCKER_IMAGE }}:latest
+      #       docker stop express-app || true
+      #       docker rm express-app || true
+      #       docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
+
       - name: 🚢 Deploy to server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
+          host: 10.0.100.17
+          username: aidcitadmin
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
@@ -203,6 +218,7 @@ jobs:
             docker stop express-app || true
             docker rm express-app || true
             docker run -d --name express-app -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
+          strict_host_key_checking: false
       
       # Step 4: Success notification
       - name: ✅ Deployment complete..
